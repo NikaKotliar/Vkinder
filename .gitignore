@@ -1,0 +1,5 @@
+vk_token.txt
+VK_Access.txt
+*.json
+.idea
+__pycache__
