@@ -2,7 +2,6 @@ from pprint import pprint
 import calling_vk_api
 import data_base
 
-
 appropriate_photos_types = ['z', 'y', 'r', 'x']
 
 
@@ -25,16 +24,18 @@ def extract_photos(photo_infos):
     return users_photo_dict
 
 
+def photo_as_dict(photo_info):
+    return {'link': photo_info[0], 'likes': photo_info[1]}
+
+
 def get_user_info(photo_dict, id):
     photo_info = extract_photos(photo_dict)
-    person_link = 'https://vk.com/id' + str(id)
-    print('Ссылка: ' + person_link)
+    link = 'https://vk.com/id' + str(id)
     list_photos = list(photo_info.items())
     list_photos.sort(key=lambda i: i[1], reverse=True)
-    for i in list_photos[:3]:
-        print(i[0], ':', i[1])
+    photos = [i[0] for i in list_photos[:3]]
+    return link, photos
 
 
-def made_desicion(user_id, match_id):
-    user_decision = input('Введите 1 если Да и 0 если Нет ')
-    data_base.keep_user_desicion(user_id, match_id, user_decision)
+def made_desicion(user_id, match_id, decision):
+    data_base.keep_user_desicion(user_id, match_id, decision)

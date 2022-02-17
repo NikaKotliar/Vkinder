@@ -2,6 +2,7 @@ import vk_api
 import json
 import getting_searching_info
 
+
 def get_tokens(path_to_token_group, path_to_token_user):
     with open(path_to_token_group, 'r') as file_object:
         token_group = file_object.read().strip()
@@ -30,16 +31,10 @@ def get_city_id(city_name):
     return city_name['items'][0]['id']
 
 
-def getting_matches(user_info):
-    age = getting_searching_info.getting_age(user_info)
-    city_id = get_city_id(getting_searching_info.getting_city(user_info))
-    sex = getting_searching_info.getting_sex(user_info)
-    relation = getting_searching_info.getting_relation(user_info)
+
+def getting_matches(city_id, sex, relation, age):
     match_offset = 0
     offset = match_offset
-
-    print(age, city_id, sex, relation)
-
     match_info = vk_user.method('users.search',
                                 {'city': city_id, 'sex': sex, 'status': relation, 'age_from': age, 'age_to': age,
                                  'is_closed': False, 'offset': offset,
