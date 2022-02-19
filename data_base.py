@@ -1,5 +1,3 @@
-import random
-from pprint import pprint
 import sqlalchemy
 import process_stages
 
@@ -30,6 +28,16 @@ def update_process_stage(user_id, process_stage):
         f"UPDATE user_information SET process_stage = '{process_stage}' WHERE vk_id = '{user_id}';")
 
 
+def update_user_offset(user_id, offset):
+    connection.execute(
+        f"UPDATE user_information SET search_offset = '{offset}' WHERE vk_id = '{user_id}';")
+
+
+def update_user_offered_match(user_id, offered_vk_id):
+    connection.execute(
+        f"UPDATE user_information SET offered_vk_id = '{offered_vk_id}' WHERE vk_id = '{user_id}';")
+
+
 def keep_user_age(user_id, age):
     connection.execute(
         f"UPDATE user_information SET age= {age} WHERE vk_id = '{user_id}';")
@@ -54,6 +62,18 @@ def get_user_info(user_id):
     return connection.execute(
         f"SELECT age, city_id, sex, relation, process_stage FROM user_information "
         f"WHERE  vk_id = '{user_id}' limit 1;").fetchall()
+
+
+def get_user_search_offset(user_id):
+    return connection.execute(
+        f"SELECT search_offset FROM user_information "
+        f"WHERE  vk_id = '{user_id}' limit 1;").fetchall()[0][0]
+
+
+def get_offered_match(user_id):
+    return connection.execute(
+        f"SELECT offered_vk_id FROM user_information "
+        f"WHERE  vk_id = '{user_id}' limit 1;").fetchall()[0][0]
 
 
 def helper_get_age(user_db_info):

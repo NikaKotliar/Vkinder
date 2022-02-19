@@ -1,13 +1,5 @@
-from random import randrange
-import json
-import vk_api
-from pprint import pprint
-from datetime import date
-import datetime
-import calling_vk_api
 import choosing_match
 import data_base
-import vk_poling
 import getting_searching_info
 from random import randrange
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -21,6 +13,13 @@ def write_msg(user_id, message):
     calling_vk_api.vk_group.method(
         'messages.send',
         {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), }
+    )
+
+
+def write_msg_with_attachment(user_id, message, attachment):
+    calling_vk_api.vk_group.method(
+        'messages.send',
+        {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'attachment': attachment}
     )
 
 
@@ -114,13 +113,14 @@ def handle_message(request, user_id):
 
     if request == "привет":
         validate_user(user_id)
-        write_msg(user_id, f"Привет. Проверяем данные для начала подбора")
     elif request == 'найди мне пару':
         show_next_match(user_id)
     elif request == '1':
+        match_id = data_base.get_offered_match(user_id)
         choosing_match.made_desicion(user_id, match_id, 1)
         show_next_match(user_id)
     elif request == '0':
+        match_id = data_base.get_offered_match(user_id)
         choosing_match.made_desicion(user_id, match_id, 0)
         show_next_match(user_id)
 
@@ -139,27 +139,26 @@ def start_polling():
                 handle_message(request, event.user_id)
 
 
-match_id = 1
-offset = 0
-
 def show_next_match(user_id):
-    global match_id
-    global offset
     age, city_id, sex, relation, stage = data_base.get_user_info(user_id)[0]
+    offset = data_base.get_user_search_offset(user_id)
 
     match_infos = calling_vk_api.getting_matches(age, city_id, sex, relation, offset)
     local_counter = find_next_not_closed(0, match_infos, user_id)
     while local_counter >= len(match_infos):
         offset += calling_vk_api.matches_per_page
+        data_base.update_user_offset(user_id, offset)
         match_infos = calling_vk_api.getting_matches(age, city_id, sex, relation, offset)
         local_counter = find_next_not_closed(0, match_infos, user_id)
 
     match_id = match_infos[local_counter]['id']
+    data_base.update_user_offered_match(user_id, match_id)
     photo_info = calling_vk_api.getting_photo_info(match_id)['items']
     link, three_popular_photo = choosing_match.get_user_info(photo_info, match_id)
     write_msg(user_id, f"Я нашел для вас пару {link}")
-    write_msg(user_id, f"Оцените фотографии {' , '.join(three_popular_photo)}")
-    write_msg(user_id, "Нажмите 1 чтобы выбрать эту пару или 0 чтобы посмотреть следующего человека")
+    photos_urls = ','.join(three_popular_photo)
+    write_msg_with_attachment(user_id, f"Оцените фотографии", photos_urls)
+    write_msg(user_id, "Нажмите\n1 - если вам понравилась пара\n0 - чтобы посмотреть следующего человека")
     return None
 
 

@@ -1,6 +1,5 @@
 import vk_api
 import json
-import getting_searching_info
 
 
 def get_tokens(path_to_token_group, path_to_token_user):
@@ -14,6 +13,7 @@ def get_tokens(path_to_token_group, path_to_token_user):
 token_group, token_user = get_tokens('VK_Access.txt', 'vk_token.txt')
 vk_group = vk_api.VkApi(token=token_group)
 vk_user = vk_api.VkApi(token=token_user)
+matches_per_page = 25
 
 
 def getting_user_info(user_ids):
@@ -30,7 +30,7 @@ def get_city_id(city_name):
     city_name = vk_user.method('database.getCities', {'country_id': 1, 'q': city_name, 'need_all': 0, 'count': 1})
     return city_name['items'][0]['id']
 
-matches_per_page = 3
+
 def getting_matches(age, city_id, sex, relation, offset=0):
     match_info = vk_user.method('users.search',
                                 {'city': city_id, 'sex': sex, 'status': relation, 'age_from': age, 'age_to': age,

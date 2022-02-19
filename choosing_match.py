@@ -1,26 +1,11 @@
-from pprint import pprint
-import calling_vk_api
 import data_base
-
-appropriate_photos_types = ['z', 'y', 'r', 'x']
-
-
-def select_size(sizes):
-    for size in sizes:
-        if size['type'] in appropriate_photos_types:
-            return size
-    return None
 
 
 def extract_photos(photo_infos):
     users_photo_dict = {}
     for item in photo_infos:
-        preferable_size = select_size(item['sizes'])
-        if preferable_size is None:
-            continue
-        url = preferable_size['url']
         sravnenie = item['likes']['count'] + item['comments']['count']
-        users_photo_dict[url] = sravnenie
+        users_photo_dict[f"photo{item['owner_id']}_{item['id']}"] = sravnenie
     return users_photo_dict
 
 
