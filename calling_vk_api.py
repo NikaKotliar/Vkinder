@@ -30,14 +30,11 @@ def get_city_id(city_name):
     city_name = vk_user.method('database.getCities', {'country_id': 1, 'q': city_name, 'need_all': 0, 'count': 1})
     return city_name['items'][0]['id']
 
-
-
-def getting_matches(city_id, sex, relation, age):
-    match_offset = 0
-    offset = match_offset
+matches_per_page = 3
+def getting_matches(age, city_id, sex, relation, offset=0):
     match_info = vk_user.method('users.search',
                                 {'city': city_id, 'sex': sex, 'status': relation, 'age_from': age, 'age_to': age,
-                                 'is_closed': False, 'offset': offset,
+                                 'is_closed': False, 'offset': offset, 'count': matches_per_page,
                                  'has_photo': 1,
                                  'fields': 'id, first_name, last_name, city_name'})
 

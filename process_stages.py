@@ -1,0 +1,6 @@
+new_user_created = 'new_user_created'
+waiting_age = 'waiting_user_age'
+waiting_city_name = 'waiting_user_city_id'
+waiting_sex = 'waiting_user_sex'
+waiting_relation = 'waiting_user_relation'
+complete = 'complete'
