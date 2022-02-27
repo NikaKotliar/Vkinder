@@ -20,7 +20,3 @@ def get_user_info(photo_dict, id):
     list_photos.sort(key=lambda i: i[1], reverse=True)
     photos = [i[0] for i in list_photos[:3]]
     return link, photos
-
-
-def made_desicion(user_id, match_id, decision):
-    data_base.keep_user_desicion(user_id, match_id, decision)
