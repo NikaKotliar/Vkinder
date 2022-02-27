@@ -1,13 +1,13 @@
 import choosing_match
-import data_base
 import getting_searching_info
 from random import randrange
 from vk_api.longpoll import VkLongPoll, VkEventType
 import calling_vk_api
 import process_stages
+import work_with_cache
 
 long_poll = VkLongPoll(calling_vk_api.vk_group)
-user_storage = data_base.UserStorageDb()
+user_storage = work_with_cache.CacheWork()
 
 
 def write_msg(user_id, message):
@@ -118,13 +118,20 @@ def handle_message(request, user_id):
         show_next_match(user_id)
     elif request == '1':
         match_id = user_storage.get_offered_match(user_id)
-        user_storage.keep_user_decision(user_id, match_id, 1)
-        show_next_match(user_id)
+        if match_id is None:
+            write_msg(user_id, "Проблемы с сохранением пары")
+        elif user_storage.keep_user_decision(user_id, match_id, 1):
+            show_next_match(user_id)
+        else:
+            write_msg(user_id, "Не удалось сохранить результат")
     elif request == '0':
         match_id = user_storage.get_offered_match(user_id)
-        user_storage.keep_user_decision(user_id, match_id, 0)
-        show_next_match(user_id)
-
+        if match_id is None:
+            write_msg(user_id, "Проблемы с сохранением пары")
+        elif user_storage.keep_user_decision(user_id, match_id, 0):
+            show_next_match(user_id)
+        else:
+            write_msg(user_id, "Не удалось сохранить результат")
     elif request == "пока":
         write_msg(user_id, "Пока((")
     else:

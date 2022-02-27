@@ -18,6 +18,8 @@ class UserStorage:
         pass
 
     def keep_user_decision(self, user_id, match_id, decision):
+        # вернет true, если удалось сохранить результат
+        # вернет false, если не удалось сохранить результат
         pass
 
     def get_user_match(self, user_id, match_id):
@@ -54,5 +56,5 @@ class UserStorage:
         pass
 
 
-class CantGetUserInfo(Exception):
+class StorageError(Exception):
     pass
